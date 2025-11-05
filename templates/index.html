@@ -1,0 +1,40 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Guess the Word</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; }
+#guesses div { margin: 5px 0; padding: 5px; font-weight: bold; }
+input { font-size: 16px; padding: 5px; }
+button { font-size: 16px; padding: 5px 10px; }
+</style>
+</head>
+<body>
+<h2>Guess the Word</h2>
+<input id="guessInput" type="text">
+<button onclick="submitGuess()">Guess</button>
+
+<div id="guesses"></div>
+
+<script>
+function submitGuess() {
+    const word = document.getElementById("guessInput").value;
+    fetch("/guess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ word: word })
+    })
+    .then(res => res.json())
+    .then(data => {
+        const div = document.createElement("div");
+        div.textContent = data.word;
+        div.style.color = data.color;
+        document.getElementById("guesses").appendChild(div);
+        document.getElementById("guessInput").value = "";
+    });
+}
+</script>
+</body>
+</html>
