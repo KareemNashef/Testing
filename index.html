@@ -1,684 +1,1126 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لعبة تخمين الكلمة</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة تخمين الكلمة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-    font-family: 'Cairo', Arial, sans-serif;
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    min-height: 100vh;
-    padding: 40px 20px;
-}
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
 
-.container {
-    width: 100%;
-    max-width: 700px;
-    margin: 0 auto;
-}
+        .container {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+        }
 
-.game-card {
-    background: #1e293b;
-    border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    overflow: hidden;
-    animation: slideIn 0.5s ease-out;
-    margin-bottom: 30px;
-}
+        .game-card {
+            background: #1e293b;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+            margin-bottom: 30px;
+        }
 
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.header {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    padding: 40px 30px;
-    text-align: center;
-    color: white;
-    position: relative;
-}
-
-.header h1 {
-    font-size: 36px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
-
-.header p {
-    font-size: 16px;
-    opacity: 0.95;
-}
-
-.game-content {
-    padding: 30px;
-}
-
-/* --- Styles for Game Selector --- */
-.selector-container {
-    width: 100%;
-    max-width: 700px;
-    margin: 0 auto;
-}
-
-.selector-header {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    padding: 30px 20px;
-    text-align: center;
-    color: white;
-    border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    margin-bottom: 40px;
-}
-
-.selector-header h1 {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-.selector-header p {
-    font-size: 15px;
-    opacity: 0.9;
-}
-
-.levels-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 20px;
-}
-
-.level-card {
-    background: #1e293b;
-    border-radius: 16px;
-    padding: 25px 20px;
-    text-align: center;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 150px;
-}
-
-.level-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
-}
-
-.level-icon-container {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 15px;
-    font-size: 28px;
-    font-weight: 700;
-    color: white;
-}
-
-.level-icon-container.locked {
-    background-color: #334155;
-    color: #64748b;
-}
-
-.level-icon-container.progress {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.level-icon-container.solved {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    font-size: 20px; /* Smaller font to fit word */
-}
-
-.level-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #e2e8f0;
-}
-
-/* --- Styles for returning to selector --- */
-.back-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(0,0,0,0.2);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.2);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10;
-    display: none;
-    align-items: center;
-    gap: 5px;
-    font-size: 15px;
-}
-
-.back-button:hover {
-    background: rgba(0,0,0,0.4);
-}
-
-/* --- Styles for Solved Word Display --- */
-.solved-word-container {
-    text-align: center;
-    margin-bottom: 25px;
-    padding: 15px;
-    background: rgba(16, 185, 129, 0.1);
-    border: 2px solid #10b981;
-    border-radius: 16px;
-    animation: fadeIn 0.5s ease-out;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
-.solved-word-label {
-    color: #94a3b8;
-    font-size: 14px;
-    font-weight: 600;
-}
-.solved-word {
-    font-size: 32px;
-    font-weight: 700;
-    color: #10b981;
-    margin-top: 5px;
-}
-
-
-/* --- Existing Styles --- */
-.input-section { display: flex; gap: 12px; margin-bottom: 30px; }
-.input-wrapper { flex: 1; position: relative; }
-#guessInput { width: 100%; padding: 18px 24px; font-size: 18px; font-family: 'Cairo', Arial, sans-serif; border: 2px solid #334155; border-radius: 16px; outline: none; transition: all 0.3s; background: #0f172a; color: #e2e8f0; }
-#guessInput:focus { border-color: #f59e0b; box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15); }
-#guessInput::placeholder { color: #64748b; }
-.submit-btn { padding: 18px 36px; font-size: 18px; font-family: 'Cairo', Arial, sans-serif; font-weight: 600; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
-.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6); }
-.submit-btn:active { transform: translateY(0); }
-.stats { display: flex; justify-content: space-around; margin-bottom: 30px; padding: 24px; background: #0f172a; border-radius: 16px; border: 1px solid #334155; }
-.stat-item { text-align: center; }
-.stat-value { font-size: 32px; font-weight: 700; color: #f59e0b; }
-.stat-label { font-size: 14px; color: #94a3b8; margin-top: 5px; }
-.section-title { font-size: 20px; font-weight: 700; color: #e2e8f0; margin-bottom: 20px; padding-right: 10px; }
-.guesses-container { display: flex; flex-direction: column; gap: 15px; }
-.invalid-guesses { margin-top: 40px; }
-.invalid-section-title { font-size: 18px; font-weight: 600; color: #94a3b8; margin-bottom: 15px; padding-right: 10px; }
-.guess-item { background: #0f172a; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s; animation: guessAppear 0.5s ease-out; border-right: 5px solid; position: relative; overflow: hidden; }
-.guess-item.latest::before { content: ''; position: absolute; top: 0; right: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.05), transparent); transform: translateX(-100%); animation: slideGlow 2s ease-in-out infinite; }
-@keyframes slideGlow { 0%, 100% { transform: translateX(-100%); } 50% { transform: translateX(100%); } }
-@keyframes guessAppear { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-.guess-item:hover { transform: translateX(5px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
-.guess-item.invalid { opacity: 0.7; border-right-color: #64748b; }
-.guess-item.invalid.latest::before { display: none; }
-.guess-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.guess-word { font-size: 26px; font-weight: 700; color: #e2e8f0; }
-.guess-item.invalid .guess-word { color: #94a3b8; }
-.guess-rank { display: flex; align-items: center; gap: 6px; font-size: 15px; color: #cbd5e1; background: #1e293b; padding: 6px 14px; border-radius: 20px; border: 1px solid #334155; }
-.progress-bar { height: 14px; background: #1e293b; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid #334155; }
-.progress-fill { height: 100%; border-radius: 10px; transition: width 1s cubic-bezier(0.65, 0, 0.35, 1); position: relative; overflow: hidden; }
-.progress-fill::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient( 90deg, transparent, rgba(255,255,255,0.3), transparent ); animation: shimmer 2s infinite; }
-@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-.winner-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; }
-.confetti { position: absolute; width: 10px; height: 10px; animation: confetti-fall 3s linear forwards; }
-@keyframes confetti-fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
-.winner-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e293b; padding: 50px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); text-align: center; z-index: 1001; animation: modalPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); border: 2px solid #f59e0b; }
-@keyframes modalPop { 0% { transform: translate(-50%, -50%) scale(0); } 100% { transform: translate(-50%, -50%) scale(1); } }
-.modal-close-btn { position: absolute; top: 15px; left: 20px; /* RTL top-left */ background: none; border: none; font-size: 36px; color: #64748b; cursor: pointer; line-height: 1; transition: color 0.2s; }
-.modal-close-btn:hover { color: #e2e8f0; }
-.winner-modal h2 { font-size: 40px; color: #10b981; margin-bottom: 20px; }
-.winner-modal .winner-word { font-size: 32px; font-weight: 700; color: #f59e0b; margin: 20px 0; }
-.empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
-.empty-state i { font-size: 72px; margin-bottom: 20px; opacity: 0.3; }
-.empty-state p { font-size: 18px; }
-.not-in-list-badge { display: inline-block; background: #dc2626; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-right: 10px; }
-@keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); } 20%, 40%, 60%, 80% { transform: translateX(10px); } }
-@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
-@media (max-width: 600px) { .input-section { flex-direction: column; } .submit-btn { width: 100%; } .header h1 { font-size: 28px; } .guess-word { font-size: 22px; } .back-button { top: 10px; right: 10px; } }
-</style>
-</head>
-<body>
-
-<!-- Game Selector Page -->
-<div id="gameSelectorPage" class="selector-container">
-    <div class="selector-header">
-        <h1>🎯 اختر مستوى اللعبة</h1>
-        <p>ابدأ مغامرتك في تخمين الكلمات!</p>
-    </div>
-    <div class="levels-grid" id="levelsGrid">
-        <!-- Levels will be loaded here by JavaScript -->
-    </div>
-</div>
-
-<!-- Game Page -->
-<div class="container" id="gamePage" style="display: none;">
-    <div class="game-card">
-        <div class="header">
-            <button class="back-button" onclick="showGameSelector()">
-                <i class="material-icons" style="font-size: 18px;">arrow_forward</i>
-                <span>عودة</span>
-            </button>
-            <h1 id="gameTitle">🎯 لعبة تخمين الكلمة</h1>
-            <p>خمن الكلمة السرية واقترب من الإجابة!</p>
-        </div>
-
-        <div class="game-content">
-            <!-- Container for solved word display -->
-            <div id="solvedWordContainer" class="solved-word-container" style="display: none;">
-                <div class="solved-word-label">الكلمة الصحيحة</div>
-                <div id="solvedWord" class="solved-word"></div>
-            </div>
-
-            <div class="input-section">
-                <div class="input-wrapper">
-                    <input
-                        id="guessInput"
-                        type="text"
-                        placeholder="اكتب تخمينك هنا..."
-                        autocomplete="off"
-                    >
-                </div>
-                <button class="submit-btn" onclick="submitGuess()">
-                    تخمين
-                </button>
-            </div>
-
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="totalGuesses">0</div>
-                    <div class="stat-label">المحاولات</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="bestRank">-</div>
-                    <div class="stat-label">أفضل ترتيب</div>
-                </div>
-            </div>
-
-            <div id="validGuessesSection" style="display: none;">
-                <div class="section-title">التخمينات</div>
-                <div class="guesses-container" id="validGuesses"></div>
-            </div>
-
-            <div id="invalidGuessesSection" class="invalid-guesses" style="display: none;">
-                <div class="invalid-section-title">كلمات غير موجودة في القائمة</div>
-                <div class="guesses-container" id="invalidGuesses"></div>
-            </div>
-
-            <div class="empty-state" id="emptyState">
-                <i class="material-icons">lightbulb_outline</i>
-                <p>ابدأ بتخمين كلمة!</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="winner-animation" id="winnerAnimation"></div>
-
-<script>
-// --- Cookie Functions ---
-function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/";
-}
-
-function getCookie(name) {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-}
-
-// --- Game Management ---
-const gameSavePrefix = "wordGameProgress_";
-const levelsDirectory = "/Lists";
-
-let availableGames = [];
-let currentGame = null;
-let currentWordList = [];
-let currentHiddenWord = "";
-let currentGuesses = [];
-let currentBestRank = Infinity;
-
-// --- DOM Elements ---
-const gameSelectorPage = document.getElementById('gameSelectorPage');
-const gamePage = document.getElementById('gamePage');
-const levelsGrid = document.getElementById('levelsGrid');
-const gameTitleElement = document.getElementById('gameTitle');
-const guessInput = document.getElementById('guessInput');
-const totalGuessesElement = document.getElementById('totalGuesses');
-const bestRankElement = document.getElementById('bestRank');
-const validGuessesContainer = document.getElementById('validGuesses');
-const invalidGuessesContainer = document.getElementById('invalidGuesses');
-const validGuessesSection = document.getElementById('validGuessesSection');
-const invalidGuessesSection = document.getElementById('invalidGuessesSection');
-const emptyStateElement = document.getElementById('emptyState');
-const winnerAnimationElement = document.getElementById('winnerAnimation');
-const solvedWordContainer = document.getElementById('solvedWordContainer');
-const solvedWordElement = document.getElementById('solvedWord');
-
-
-// --- Initialization ---
-window.onload = () => {
-    loadGameLevels();
-    showGameSelector();
-};
-
-guessInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        submitGuess();
-    }
-});
-
-
-async function fetchLevelFileNames() {
-    try {
-        const response = await fetch('levels.json');
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        return Array.isArray(data) ? data : [];
-    } catch (error) {
-        console.error("Error fetching levels.json:", error);
-        return [];
-    }
-}
-
-async function loadGameLevels() {
-    const files = await fetchLevelFileNames();
-    availableGames = [];
-
-    for (const file of files) {
-        if (file.startsWith("output_") && file.endsWith("_List.json")) {
-            const hiddenWord = file.replace("output_", "").replace("_List.json", "");
-            const gameId = hiddenWord;
-            const progressCookie = getCookie(`${gameSavePrefix}${gameId}`);
-            let status = "locked";
-            let bestRankForGame = Infinity;
-
-            if (progressCookie) {
-                try {
-                    const progressData = JSON.parse(progressCookie);
-                    if (progressData.solved) {
-                        status = "solved";
-                    } else if (progressData.guesses && progressData.guesses.length > 0) {
-                        status = "progress";
-                    }
-                    bestRankForGame = progressData.bestRank !== undefined ? progressData.bestRank : Infinity;
-                } catch (e) {
-                    console.error(`Error parsing cookie for game ${gameId}:`, e);
-                }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
             }
 
-            availableGames.push({
-                id: gameId,
-                fileName: file,
-                hiddenWord: hiddenWord,
-                status: status,
-                bestRank: bestRankForGame
-            });
-        }
-    }
-    renderGameSelector();
-}
-
-function renderGameSelector() {
-    levelsGrid.innerHTML = '';
-    if (availableGames.length === 0) {
-        levelsGrid.innerHTML = `<p style="color: #64748b; text-align: center; grid-column: 1/-1;">لم يتم العثور على مستويات.</p>`;
-        return;
-    }
-
-    availableGames.forEach((game, index) => {
-        const levelCard = document.createElement('div');
-        levelCard.className = 'level-card';
-        levelCard.onclick = () => startGame(game, index + 1);
-
-        let iconClass = 'locked';
-        let iconText = '?';
-
-        if (game.status === "solved") {
-            iconClass = 'solved';
-            iconText = game.hiddenWord; // Show the word only when solved
-        } else if (game.status === "progress") {
-            iconClass = 'progress';
-            iconText = '...';
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        levelCard.innerHTML = `
+        .header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .game-content {
+            padding: 30px;
+        }
+
+        /* --- Styles for Game Selector --- */
+        .selector-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .selector-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            margin-bottom: 40px;
+        }
+
+        .selector-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .selector-header p {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .level-card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 150px;
+        }
+
+        .level-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .level-icon-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .level-icon-container.locked {
+            background-color: #334155;
+            color: #64748b;
+        }
+
+        .level-icon-container.progress {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .level-icon-container.solved {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            font-size: 20px;
+            /* Smaller font to fit word */
+        }
+
+        .level-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        /* --- Styles for returning to selector --- */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: none;
+            align-items: center;
+            gap: 5px;
+            font-size: 15px;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- Styles for Solved Word Display --- */
+        .solved-word-container {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid #10b981;
+            border-radius: 16px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .solved-word-label {
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .solved-word {
+            font-size: 32px;
+            font-weight: 700;
+            color: #10b981;
+            margin-top: 5px;
+        }
+
+
+        /* --- Existing Styles --- */
+
+        .hint-btn {
+            padding: 18px 36px;
+            font-size: 18px;
+            font-family: 'Cairo', Arial, sans-serif;
+            font-weight: 600;
+            background: linear-gradient(135deg, #0be5f5 0%, #06d95e 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(4, 114, 48, 0.4);
+        }
+
+        .hint-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(7, 201, 52, 0.6);
+        }
+
+        .hint-btn:active {
+            transform: translateY(0);
+        }
+
+        .input-section {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        #guessInput {
+            width: 100%;
+            padding: 18px 24px;
+            font-size: 18px;
+            font-family: 'Cairo', Arial, sans-serif;
+            border: 2px solid #334155;
+            border-radius: 16px;
+            outline: none;
+            transition: all 0.3s;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        #guessInput:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
+        }
+
+        #guessInput::placeholder {
+            color: #64748b;
+        }
+
+        .submit-btn {
+            padding: 18px 36px;
+            font-size: 18px;
+            font-family: 'Cairo', Arial, sans-serif;
+            font-weight: 600;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            padding: 24px;
+            background: #0f172a;
+            border-radius: 16px;
+            border: 1px solid #334155;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+
+        .guesses-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .invalid-guesses {
+            margin-top: 40px;
+        }
+
+        .invalid-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 15px;
+            padding-right: 10px;
+        }
+
+        .guess-item {
+            background: #0f172a;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: guessAppear 0.5s ease-out;
+            border-right: 5px solid;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .guess-item.latest {
+            border-left: 3px solid white;
+        }
+
+        .guess-item.latest::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(245, 227, 197, 0.05), transparent);
+            transform: translateX(-100%);
+            animation: slideGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes slideGlow {
+
+            0%,
+            100% {
+                transform: translateX(-100%);
+            }
+
+            50% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes guessAppear {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .guess-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .guess-item.invalid {
+            opacity: 0.7;
+            border-right-color: #64748b;
+        }
+
+        .guess-item.invalid.latest::before {
+            display: none;
+        }
+
+        .guess-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .guess-word {
+            font-size: 26px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+
+        .guess-item.invalid .guess-word {
+            color: #94a3b8;
+        }
+
+        .guess-rank {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 15px;
+            color: #cbd5e1;
+            background: #1e293b;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #334155;
+        }
+
+        .progress-bar {
+            height: 14px;
+            background: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #334155;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s cubic-bezier(0.65, 0, 0.35, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .winner-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .winner-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1e293b;
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            z-index: 1001;
+            animation: modalPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 2px solid #f59e0b;
+        }
+
+        @keyframes modalPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            /* RTL top-left */
+            background: none;
+            border: none;
+            font-size: 36px;
+            color: #64748b;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            color: #e2e8f0;
+        }
+
+        .winner-modal h2 {
+            font-size: 40px;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        .winner-modal .winner-word {
+            font-size: 32px;
+            font-weight: 700;
+            color: #f59e0b;
+            margin: 20px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 72px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 18px;
+        }
+
+        .not-in-list-badge {
+            display: inline-block;
+            background: #dc2626;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-10px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(10px);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .hint-btn {
+                width: 100%;
+            }
+
+            .input-section {
+                flex-direction: column;
+            }
+
+            .submit-btn {
+                width: 100%;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .guess-word {
+                font-size: 22px;
+            }
+
+            .back-button {
+                top: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Game Selector Page -->
+    <div id="gameSelectorPage" class="selector-container">
+        <div class="selector-header">
+            <h1>🎯 اختر مستوى اللعبة</h1>
+            <p>ابدأ مغامرتك في تخمين الكلمات!</p>
+        </div>
+        <div class="levels-grid" id="levelsGrid">
+            <!-- Levels will be loaded here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Game Page -->
+    <div class="container" id="gamePage" style="display: none;">
+        <div class="game-card">
+            <div class="header">
+                <button class="back-button" onclick="showGameSelector()">
+                    <i class="material-icons" style="font-size: 18px;">arrow_forward</i>
+                    <span>عودة</span>
+                </button>
+                <h1 id="gameTitle">🎯 لعبة تخمين الكلمة</h1>
+                <p>خمن الكلمة السرية واقترب من الإجابة!</p>
+            </div>
+
+            <div class="game-content">
+                <!-- Container for solved word display -->
+                <div id="solvedWordContainer" class="solved-word-container" style="display: none;">
+                    <div class="solved-word-label">الكلمة الصحيحة</div>
+                    <div id="solvedWord" class="solved-word"></div>
+                </div>
+
+                <div class="input-section">
+                    <button class="hint-btn" onclick="getHint()">
+                        مساعدة
+                    </button>
+                    <div class="input-wrapper">
+                        <input id="guessInput" type="text" placeholder="اكتب تخمينك هنا..." autocomplete="off">
+                    </div>
+                    <button class="submit-btn" onclick="submitGuess()">
+                        تخمين
+                    </button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalHints">0</div>
+                        <div class="stat-label">المساعدات</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalGuesses">0</div>
+                        <div class="stat-label">المحاولات</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="bestRank">-</div>
+                        <div class="stat-label">أفضل ترتيب</div>
+                    </div>
+                </div>
+
+                <div id="validGuessesSection" style="display: none;">
+                    <div class="section-title">التخمينات</div>
+                    <div class="guesses-container" id="validGuesses"></div>
+                </div>
+
+                <div id="invalidGuessesSection" class="invalid-guesses" style="display: none;">
+                    <div class="invalid-section-title">كلمات غير موجودة في القائمة</div>
+                    <div class="guesses-container" id="invalidGuesses"></div>
+                </div>
+
+                <div class="empty-state" id="emptyState">
+                    <i class="material-icons">lightbulb_outline</i>
+                    <p>ابدأ بتخمين كلمة!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="winner-animation" id="winnerAnimation"></div>
+
+    <script>
+        // --- Cookie Functions ---
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        // --- Game Management ---
+        const gameSavePrefix = "wordGameProgress_";
+        const levelsDirectory = "/Lists";
+
+        let availableGames = [];
+        let currentGame = null;
+        let currentWordList = [];
+        let currentHiddenWord = "";
+        let currentGuesses = [];
+        let currentBestRank = Infinity;
+
+        // --- DOM Elements ---
+        const gameSelectorPage = document.getElementById('gameSelectorPage');
+        const gamePage = document.getElementById('gamePage');
+        const levelsGrid = document.getElementById('levelsGrid');
+        const gameTitleElement = document.getElementById('gameTitle');
+        const guessInput = document.getElementById('guessInput');
+        const totalHintsElement = document.getElementById('totalHints');
+        const totalGuessesElement = document.getElementById('totalGuesses');
+        const bestRankElement = document.getElementById('bestRank');
+        const validGuessesContainer = document.getElementById('validGuesses');
+        const invalidGuessesContainer = document.getElementById('invalidGuesses');
+        const validGuessesSection = document.getElementById('validGuessesSection');
+        const invalidGuessesSection = document.getElementById('invalidGuessesSection');
+        const emptyStateElement = document.getElementById('emptyState');
+        const winnerAnimationElement = document.getElementById('winnerAnimation');
+        const solvedWordContainer = document.getElementById('solvedWordContainer');
+        const solvedWordElement = document.getElementById('solvedWord');
+
+
+        // --- Initialization ---
+        window.onload = () => {
+            loadGameLevels();
+            showGameSelector();
+        };
+
+        guessInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                submitGuess();
+            }
+        });
+
+
+        async function fetchLevelFileNames() {
+            try {
+                const response = await fetch('levels.json');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                return Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error("Error fetching levels.json:", error);
+                return [];
+            }
+        }
+
+        async function loadGameLevels() {
+            const files = await fetchLevelFileNames();
+            availableGames = [];
+
+            for (const file of files) {
+                if (file.startsWith("output_") && file.endsWith("_List.json")) {
+                    const hiddenWord = file.replace("output_", "").replace("_List.json", "");
+                    const gameId = hiddenWord;
+                    const progressCookie = getCookie(`${gameSavePrefix}${gameId}`);
+                    let status = "locked";
+                    let bestRankForGame = Infinity;
+
+                    if (progressCookie) {
+                        try {
+                            const progressData = JSON.parse(progressCookie);
+                            if (progressData.solved) {
+                                status = "solved";
+                            } else if (progressData.guesses && progressData.guesses.length > 0) {
+                                status = "progress";
+                            }
+                            bestRankForGame = progressData.bestRank !== undefined ? progressData.bestRank : Infinity;
+                        } catch (e) {
+                            console.error(`Error parsing cookie for game ${gameId}:`, e);
+                        }
+                    }
+
+                    availableGames.push({
+                        id: gameId,
+                        fileName: file,
+                        hiddenWord: hiddenWord,
+                        status: status,
+                        bestRank: bestRankForGame
+                    });
+                }
+            }
+            renderGameSelector();
+        }
+
+        function renderGameSelector() {
+            levelsGrid.innerHTML = '';
+            if (availableGames.length === 0) {
+                levelsGrid.innerHTML = `<p style="color: #64748b; text-align: center; grid-column: 1/-1;">لم يتم العثور على مستويات.</p>`;
+                return;
+            }
+
+            availableGames.forEach((game, index) => {
+                const levelCard = document.createElement('div');
+                levelCard.className = 'level-card';
+                levelCard.onclick = () => startGame(game, index + 1);
+
+                let iconClass = 'locked';
+                let iconText = '?';
+
+                if (game.status === "solved") {
+                    iconClass = 'solved';
+                    iconText = game.hiddenWord; // Show the word only when solved
+                } else if (game.status === "progress") {
+                    iconClass = 'progress';
+                    iconText = '...';
+                }
+
+                levelCard.innerHTML = `
             <div class="level-icon-container ${iconClass}">${iconText}</div>
             <div class="level-title">المستوى ${index + 1}</div>
         `;
-        levelsGrid.appendChild(levelCard);
-    });
-}
+                levelsGrid.appendChild(levelCard);
+            });
+        }
 
-function showGameSelector() {
-    gamePage.style.display = 'none';
-    gameSelectorPage.style.display = 'block';
-    document.querySelector('.back-button').style.display = 'none';
-}
+        function showGameSelector() {
+            gamePage.style.display = 'none';
+            gameSelectorPage.style.display = 'block';
+            document.querySelector('.back-button').style.display = 'none';
+        }
 
-async function startGame(game, levelNumber) {
-    currentGame = game;
-    gameTitleElement.textContent = `المستوى ${levelNumber}`;
+        async function startGame(game, levelNumber) {
+            currentGame = game;
+            gameTitleElement.textContent = `المستوى ${levelNumber}`;
 
-    gameSelectorPage.style.display = 'none';
-    gamePage.style.display = 'block';
-    document.querySelector('.back-button').style.display = 'flex';
+            gameSelectorPage.style.display = 'none';
+            gamePage.style.display = 'block';
+            document.querySelector('.back-button').style.display = 'flex';
 
-    await loadGameData(game);
-    renderGuesses();
-    updateStats();
-    guessInput.focus();
-}
+            await loadGameData(game);
+            renderGuesses();
+            updateStats();
+            guessInput.focus();
+        }
 
-async function loadGameData(game) {
-    // Reset UI and state for the new game
-    solvedWordContainer.style.display = 'none';
-    validGuessesContainer.innerHTML = '';
-    invalidGuessesContainer.innerHTML = '';
-    validGuessesSection.style.display = 'none';
-    invalidGuessesSection.style.display = 'none';
-    emptyStateElement.style.display = 'block';
-    guessInput.disabled = false;
-    document.querySelector('.submit-btn').disabled = false;
+        async function loadGameData(game) {
+            // Reset UI and state for the new game
+            solvedWordContainer.style.display = 'none';
+            validGuessesContainer.innerHTML = '';
+            invalidGuessesContainer.innerHTML = '';
+            validGuessesSection.style.display = 'none';
+            invalidGuessesSection.style.display = 'none';
+            emptyStateElement.style.display = 'block';
+            guessInput.disabled = false;
+            document.querySelector('.submit-btn').disabled = false;
+            document.querySelector('.hint-btn').disabled = false;
 
 
-    currentWordList = [];
-    currentHiddenWord = game.hiddenWord;
-    currentGuesses = [];
-    currentBestRank = Infinity;
+            currentWordList = [];
+            currentHiddenWord = game.hiddenWord;
+            currentGuesses = [];
+            currentBestRank = Infinity;
 
-    try {
-        const response = await fetch(`${levelsDirectory}/${game.fileName}`);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        currentWordList = data.words && Array.isArray(data.words) ? data.words : [];
-    } catch (error) {
-        console.error(`Error loading word list:`, error);
-        currentWordList = ["خطأ"]; // Fallback
-    }
+            try {
+                const response = await fetch(`${levelsDirectory}/${game.fileName}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                currentWordList = data.words && Array.isArray(data.words) ? data.words : [];
+            } catch (error) {
+                console.error(`Error loading word list:`, error);
+                currentWordList = ["خطأ"]; // Fallback
+            }
 
-    const progressCookie = getCookie(`${gameSavePrefix}${game.id}`);
-    if (progressCookie) {
-        try {
-            const progressData = JSON.parse(progressCookie);
-            currentGuesses = progressData.guesses || [];
-            currentBestRank = progressData.bestRank !== undefined ? progressData.bestRank : Infinity;
-            if (progressData.solved) {
-                game.status = "solved";
-                const winnerGuess = currentGuesses.find(g => g.winner);
-                if (winnerGuess) {
-                    displaySolvedWord(winnerGuess.word);
+            const progressCookie = getCookie(`${gameSavePrefix}${game.id}`);
+            if (progressCookie) {
+                try {
+                    const progressData = JSON.parse(progressCookie);
+                    currentGuesses = progressData.guesses || [];
+                    currentBestRank = progressData.bestRank !== undefined ? progressData.bestRank : Infinity;
+                    if (progressData.solved) {
+                        game.status = "solved";
+                        const winnerGuess = currentGuesses.find(g => g.winner);
+                        if (winnerGuess) {
+                            displaySolvedWord(winnerGuess.word);
+                        }
+                    }
+                } catch (e) {
+                    console.error(`Error parsing progress cookie for ${game.id}:`, e);
                 }
             }
-        } catch (e) {
-            console.error(`Error parsing progress cookie for ${game.id}:`, e);
+            bestRankElement.textContent = currentBestRank === Infinity ? '-' : currentBestRank;
         }
-    }
-    bestRankElement.textContent = currentBestRank === Infinity ? '-' : currentBestRank;
-}
 
-function saveGameProgress() {
-    if (!currentGame) return;
-    const progressData = {
-        guesses: currentGuesses,
-        bestRank: currentBestRank,
-        solved: currentGuesses.some(g => g.winner)
-    };
-    setCookie(`${gameSavePrefix}${currentGame.id}`, JSON.stringify(progressData), 365);
+        function saveGameProgress() {
+            if (!currentGame) return;
+            const progressData = {
+                guesses: currentGuesses,
+                bestRank: currentBestRank,
+                solved: currentGuesses.some(g => g.winner)
+            };
+            setCookie(`${gameSavePrefix}${currentGame.id}`, JSON.stringify(progressData), 365);
 
-    const gameIndex = availableGames.findIndex(g => g.id === currentGame.id);
-    if (gameIndex !== -1) {
-        availableGames[gameIndex].status = progressData.solved ? "solved" : (currentGuesses.length > 0 ? "progress" : "locked");
-        availableGames[gameIndex].bestRank = currentBestRank;
-    }
-    renderGameSelector();
-}
-
-function getColor(word) {
-    if (!currentWordList.includes(word)) return "#757575";
-    const idx = currentWordList.indexOf(word);
-    const maxIdx = currentWordList.length - 1;
-    const ratio = maxIdx > 0 ? 1 - idx / maxIdx : 1;
-    if (ratio > 0.8) return "#10b981";
-    if (ratio > 0.6) return "#84cc16";
-    if (ratio > 0.4) return "#f59e0b";
-    if (ratio > 0.2) return "#f97316";
-    return "#ef4444";
-}
-
-function submitGuess() {
-    const input = guessInput;
-    const word = input.value.trim(); // No .toLowerCase() for Arabic
-
-    if (!word) return;
-    if (currentGuesses.some(g => g.word === word)) {
-        shakeInput();
-        return;
-    }
-
-    let data;
-    const isWordInList = currentWordList.includes(word);
-    const wordIndexInList = currentWordList.indexOf(word);
-
-    if (word === currentHiddenWord) {
-        data = { word: word, winner: true, in_list: true };
-        currentGuesses.push(data); // Add to guesses to mark as solved
-        saveGameProgress();
-        showWinner(data);
-        displaySolvedWord(data.word);
-        input.value = "";
-        return; // Stop further processing
-    } else if (isWordInList) {
-        const rank = wordIndexInList + 1;
-        data = {
-            word: word,
-            color: getColor(word),
-            closeness: wordIndexInList,
-            closeness_percent: Math.round((wordIndexInList / (currentWordList.length - 1)) * 100),
-            winner: false,
-            rank: rank,
-            in_list: true
-        };
-        if (rank < currentBestRank) {
-            currentBestRank = rank;
-            bestRankElement.textContent = currentBestRank;
-            bestRankElement.style.animation = 'none';
-            setTimeout(() => { bestRankElement.style.animation = 'pulse 0.5s'; }, 10);
+            const gameIndex = availableGames.findIndex(g => g.id === currentGame.id);
+            if (gameIndex !== -1) {
+                availableGames[gameIndex].status = progressData.solved ? "solved" : (currentGuesses.length > 0 ? "progress" : "locked");
+                availableGames[gameIndex].bestRank = currentBestRank;
+            }
+            renderGameSelector();
         }
-    } else {
-        data = {
-            word: word,
-            color: "#757575",
-            closeness: currentWordList.length,
-            closeness_percent: 100,
-            winner: false,
-            rank: currentWordList.length + 1,
-            in_list: false
-        };
-    }
 
-    currentGuesses.push(data);
-    currentGuesses.sort((a, b) => a.closeness - b.closeness);
-    
-    renderGuesses();
-    updateStats();
-    saveGameProgress();
+        function getColor(word) {
+            if (!currentWordList.includes(word)) return "#757575";
+            const idx = currentWordList.indexOf(word);
+            const maxIdx = currentWordList.length - 1;
+            const ratio = maxIdx > 0 ? 1 - idx / maxIdx : 1;
+            if (ratio > 0.8) return "#10b981";
+            if (ratio > 0.6) return "#84cc16";
+            if (ratio > 0.4) return "#f59e0b";
+            if (ratio > 0.2) return "#f97316";
+            return "#ef4444";
+        }
 
-    input.value = "";
-    input.focus();
-}
+        function getHint() {
+            if (currentWordList.length === 0) return;
 
-function renderGuesses() {
-    // Filter out the winning word from the display list
-    const guessesToDisplay = currentGuesses.filter(g => !g.winner);
+            let hintWord = null;
+            const guessedWords = new Set(currentGuesses.map(g => g.word));
 
-    const validGuesses = guessesToDisplay.filter(g => g.in_list);
-    const invalidGuesses = guessesToDisplay.filter(g => !g.in_list);
-    const latestGuess = guessesToDisplay.length > 0 ? guessesToDisplay[guessesToDisplay.length - 1].word : null;
+            // Try to find a word with rank "bestRank - 1"
+            if (currentBestRank !== Infinity && currentBestRank > 1) {
+                const targetIndex = currentBestRank - 2; // Rank is index + 1, so target rank's index is (bestRank - 1) - 1
+                if (targetIndex >= 0 && targetIndex < currentWordList.length) {
+                    const potentialHint = currentWordList[targetIndex];
+                    if (!guessedWords.has(potentialHint)) {
+                        hintWord = potentialHint;
+                    }
+                }
+            }
 
-    validGuessesContainer.innerHTML = '';
-    invalidGuessesContainer.innerHTML = '';
+            // Fallback: Find the best possible unguessed word
+            if (!hintWord) {
+                for (const word of currentWordList) {
+                    if (!guessedWords.has(word)) {
+                        hintWord = word;
+                        break;
+                    }
+                }
+            }
 
-    emptyStateElement.style.display = guessesToDisplay.length === 0 ? 'block' : 'none';
-    validGuessesSection.style.display = validGuesses.length > 0 ? 'block' : 'none';
-    invalidGuessesSection.style.display = invalidGuesses.length > 0 ? 'block' : 'none';
+            if (hintWord) {
+                const hintCountElement = document.getElementById('totalHints');
+                const currentHintCount = parseInt(hintCountElement.textContent) || 0;
+                hintCountElement.textContent = (currentHintCount + 1).toString();
 
-    validGuesses.forEach((guess, index) => {
-        const isLatest = guess.word === latestGuess;
-        validGuessesContainer.appendChild(createGuessItem(guess, index, false, isLatest));
-    });
+                guessInput.value = hintWord;
+                submitGuess();
+            }
+        }
 
-    invalidGuesses.forEach((guess, index) => {
-        const isLatest = guess.word === latestGuess;
-        invalidGuessesContainer.appendChild(createGuessItem(guess, index, true, isLatest));
-    });
-}
+        function submitGuess() {
+            const input = guessInput;
+            const word = input.value.trim(); // No .toLowerCase() for Arabic
+
+            if (!word) return;
+            if (currentGuesses.some(g => g.word === word)) {
+                shakeInput();
+                return;
+            }
+
+            let data;
+            const isWordInList = currentWordList.includes(word);
+            const wordIndexInList = currentWordList.indexOf(word);
+
+            if (word === currentHiddenWord) {
+                data = { word: word, winner: true, in_list: true };
+                currentGuesses.push(data); // Add to guesses to mark as solved
+                saveGameProgress();
+                showWinner(data);
+                displaySolvedWord(data.word);
+                input.value = "";
+                return; // Stop further processing
+            } else if (isWordInList) {
+                const rank = wordIndexInList + 1;
+                data = {
+                    word: word,
+                    color: getColor(word),
+                    closeness: wordIndexInList,
+                    closeness_percent: Math.round((wordIndexInList / (currentWordList.length - 1)) * 100),
+                    winner: false,
+                    rank: rank,
+                    in_list: true
+                };
+                if (rank < currentBestRank) {
+                    currentBestRank = rank;
+                    bestRankElement.textContent = currentBestRank;
+                    bestRankElement.style.animation = 'none';
+                    setTimeout(() => { bestRankElement.style.animation = 'pulse 0.5s'; }, 10);
+                }
+            } else {
+                data = {
+                    word: word,
+                    color: "#757575",
+                    closeness: currentWordList.length,
+                    closeness_percent: 100,
+                    winner: false,
+                    rank: currentWordList.length + 1,
+                    in_list: false
+                };
+            }
+
+            const latestWordSubmitted = data.word;
+            currentGuesses.push(data);
+            currentGuesses.sort((a, b) => a.closeness - b.closeness);
+
+            renderGuesses(latestWordSubmitted);
+            updateStats();
+            saveGameProgress();
+
+            input.value = "";
+            input.focus();
+        }
+
+        function renderGuesses(latestWordSubmitted = null) {
+            // Filter out the winning word from the display list
+            const guessesToDisplay = currentGuesses.filter(g => !g.winner);
+
+            const validGuesses = guessesToDisplay.filter(g => g.in_list);
+            const invalidGuesses = guessesToDisplay.filter(g => !g.in_list);
+
+            validGuessesContainer.innerHTML = '';
+            invalidGuessesContainer.innerHTML = '';
+
+            emptyStateElement.style.display = guessesToDisplay.length === 0 ? 'block' : 'none';
+            validGuessesSection.style.display = validGuesses.length > 0 ? 'block' : 'none';
+            invalidGuessesSection.style.display = invalidGuesses.length > 0 ? 'block' : 'none';
+
+            validGuesses.forEach((guess, index) => {
+                const isLatest = guess.word === latestWordSubmitted;
+                validGuessesContainer.appendChild(createGuessItem(guess, index, false, isLatest));
+            });
+
+            invalidGuesses.forEach((guess, index) => {
+                const isLatest = guess.word === latestWordSubmitted;
+                invalidGuessesContainer.appendChild(createGuessItem(guess, index, true, isLatest));
+            });
+        }
 
 
-function createGuessItem(guess, index, isInvalid, isLatest) {
-    const item = document.createElement('div');
-    item.className = 'guess-item' + (isInvalid ? ' invalid' : '') + (isLatest ? ' latest' : '');
-    item.style.borderRightColor = isInvalid ? '#64748b' : guess.color;
-    item.style.animationDelay = `${index * 0.05}s`;
+        function createGuessItem(guess, index, isInvalid, isLatest) {
+            const item = document.createElement('div');
+            item.className = 'guess-item' + (isInvalid ? ' invalid' : '') + (isLatest ? ' latest' : '');
+            item.style.borderRightColor = isInvalid ? '#64748b' : guess.color;
+            item.style.animationDelay = `${index * 0.05}s`;
 
-    const progressFillWidth = isInvalid ? '0%' : `${100 - guess.closeness_percent}%`;
-    
-    item.innerHTML = `
+            const progressFillWidth = isInvalid ? '0%' : `${100 - guess.closeness_percent}%`;
+
+            item.innerHTML = `
         <div class="guess-header">
             <div class="guess-word">${guess.word}</div>
             <div class="guess-rank">
-                ${isInvalid ? '<span class="not-in-list-badge">ليست في القائمة</span>' : `<i class="material-icons" style="font-size: 16px;">bar_chart</i> #${guess.rank}`}
+                ${isInvalid ? '<i class="material-icons" style="font-size: 16px;">bar_chart</i><span class="not-in-list-badge">؟؟؟</span>' : `<i class="material-icons" style="font-size: 16px;">bar_chart</i> #${guess.rank}`}
             </div>
         </div>
         <div class="progress-bar">
@@ -686,74 +1128,79 @@ function createGuessItem(guess, index, isInvalid, isLatest) {
         </div>
     `;
 
-    const progressFill = item.querySelector('.progress-fill');
-    if (isLatest && !isInvalid) {
-        setTimeout(() => { progressFill.style.width = progressFillWidth; }, 50);
-    } else {
-        progressFill.style.width = progressFillWidth;
-        progressFill.style.transition = 'none';
-    }
-    
-    return item;
-}
+            const progressFill = item.querySelector('.progress-fill');
+            // Animate width only for the latest valid guess
+            if (isLatest && !isInvalid) {
+                setTimeout(() => {
+                    progressFill.style.width = progressFillWidth;
+                }, 50);
+            } else {
+                progressFill.style.width = progressFillWidth;
+                progressFill.style.transition = 'none'; // Prevent animation on already-rendered items
+            }
 
-function updateStats() {
-    // Count only non-winning guesses for the attempts display
-    const attempts = currentGuesses.filter(g => !g.winner).length;
-    totalGuessesElement.textContent = attempts;
-}
+            return item;
+        }
 
-function shakeInput() {
-    const input = guessInput;
-    input.style.animation = 'shake 0.5s';
-    setTimeout(() => { input.style.animation = ''; }, 500);
-}
+        function updateStats() {
+            // Count only non-winning guesses for the attempts display
+            const attempts = currentGuesses.filter(g => !g.winner).length;
+            totalGuessesElement.textContent = attempts;
+        }
 
-function displaySolvedWord(word) {
-    solvedWordElement.textContent = word;
-    solvedWordContainer.style.display = 'block';
-    guessInput.disabled = true; // Disable input after solving
-    document.querySelector('.submit-btn').disabled = true; // Disable button after solving
-}
+        function shakeInput() {
+            const input = guessInput;
+            input.style.animation = 'shake 0.5s';
+            setTimeout(() => { input.style.animation = ''; }, 500);
+        }
 
-function showWinner(data) {
-    const animationContainer = winnerAnimationElement;
-    animationContainer.innerHTML = '';
-    const colors = ['#f59e0b', '#d97706', '#10b981', '#059669', '#ef4444', '#dc2626'];
-    for (let i = 0; i < 100; i++) {
-        setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animationDelay = Math.random() * 0.5 + 's';
-            animationContainer.appendChild(confetti);
-            setTimeout(() => confetti.remove(), 3000);
-        }, i * 30);
-    }
-    
-    setTimeout(() => {
-        // Remove any existing modal first
-        const existingModal = document.querySelector('.winner-modal');
-        if (existingModal) existingModal.remove();
+        function displaySolvedWord(word) {
+            solvedWordElement.textContent = word;
+            solvedWordContainer.style.display = 'block';
+            guessInput.disabled = true; // Disable input after solving
+            document.querySelector('.submit-btn').disabled = true; // Disable button after solving
+            document.querySelector('.hint-btn').disabled = true;
+        }
 
-        const modal = document.createElement('div');
-        modal.className = 'winner-modal';
-        modal.innerHTML = `
+        function showWinner(data) {
+            const animationContainer = winnerAnimationElement;
+            animationContainer.innerHTML = '';
+            const colors = ['#f59e0b', '#d97706', '#10b981', '#059669', '#ef4444', '#dc2626'];
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    animationContainer.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+
+            setTimeout(() => {
+                // Remove any existing modal first
+                const existingModal = document.querySelector('.winner-modal');
+                if (existingModal) existingModal.remove();
+
+                const modal = document.createElement('div');
+                modal.className = 'winner-modal';
+                modal.innerHTML = `
             <button class="modal-close-btn" onclick="closeWinnerModal()">×</button>
             <h2>🎉 مبروك! 🎉</h2>
             <div class="winner-word">${data.word}</div>
         `;
-        document.body.appendChild(modal);
-    }, 500);
-}
+                document.body.appendChild(modal);
+            }, 500);
+        }
 
-function closeWinnerModal() {
-    const modal = document.querySelector('.winner-modal');
-    if (modal) {
-        modal.remove();
-    }
-}
-</script>
+        function closeWinnerModal() {
+            const modal = document.querySelector('.winner-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+    </script>
 </body>
+
 </html>
