@@ -763,7 +763,7 @@
 
         // --- Game Management ---
         const gameSavePrefix = "wordGameProgress_";
-        const levelsDirectory = "/Lists";
+        const levelsDirectory = "Lists";
 
         let availableGames = [];
         let currentGame = null;
@@ -1048,7 +1048,7 @@ function getHint() {
                 submitGuess();
             }
         }
-        
+
         function submitGuess() {
             const input = guessInput;
             const word = input.value.trim(); // No .toLowerCase() for Arabic
