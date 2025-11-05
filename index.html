@@ -985,16 +985,37 @@
             return "#ef4444";
         }
 
-        function getHint() {
+function getHint() {
             if (currentWordList.length === 0) return;
 
             let hintWord = null;
             const guessedWords = new Set(currentGuesses.map(g => g.word));
 
-            // Try to find a word with rank "bestRank - 1"
-            if (currentBestRank !== Infinity && currentBestRank > 1) {
-                const targetIndex = currentBestRank - 2; // Rank is index + 1, so target rank's index is (bestRank - 1) - 1
-                if (targetIndex >= 0 && targetIndex < currentWordList.length) {
+            // --- START: MODIFIED LOGIC ---
+
+            // SCENARIO 1: User has NO rank yet (first hint).
+            // Give a hint from further down the list to establish a baseline.
+            if (currentBestRank === Infinity) {
+                let targetIndex = currentWordList.length - 20;
+                
+                // If the list is too short, pick a word from the middle instead.
+                if (targetIndex < 0) {
+                    targetIndex = Math.floor(currentWordList.length / 2);
+                }
+
+                // Make sure the chosen hint hasn't already been (invalidly) guessed
+                while (guessedWords.has(currentWordList[targetIndex]) && targetIndex < currentWordList.length -1) {
+                    targetIndex++;
+                }
+
+                hintWord = currentWordList[targetIndex];
+            }
+            
+            // SCENARIO 2: User has a rank and can improve.
+            // Try to find the word with rank "bestRank - 1".
+            else if (currentBestRank > 1) {
+                const targetIndex = currentBestRank - 2; // Rank is index + 1, so one rank better is index - 1 from the best guess.
+                if (targetIndex >= 0) {
                     const potentialHint = currentWordList[targetIndex];
                     if (!guessedWords.has(potentialHint)) {
                         hintWord = potentialHint;
@@ -1002,7 +1023,10 @@
                 }
             }
 
-            // Fallback: Find the best possible unguessed word
+            // --- END: MODIFIED LOGIC ---
+
+            // FALLBACK: If the ideal hint was already guessed or unavailable,
+            // find the best possible unguessed word.
             if (!hintWord) {
                 for (const word of currentWordList) {
                     if (!guessedWords.has(word)) {
@@ -1016,12 +1040,15 @@
                 const hintCountElement = document.getElementById('totalHints');
                 const currentHintCount = parseInt(hintCountElement.textContent) || 0;
                 hintCountElement.textContent = (currentHintCount + 1).toString();
+                
+                // Also save progress when a hint is used
+                saveGameProgress();
 
                 guessInput.value = hintWord;
                 submitGuess();
             }
         }
-
+        
         function submitGuess() {
             const input = guessInput;
             const word = input.value.trim(); // No .toLowerCase() for Arabic
