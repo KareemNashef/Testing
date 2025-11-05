@@ -916,7 +916,7 @@
             guessInput.disabled = false;
             document.querySelector('.submit-btn').disabled = false;
             document.querySelector('.hint-btn').disabled = false;
-
+            totalHintsElement.textContent = '0'; // <-- Reset hints display
 
             currentWordList = [];
             currentHiddenWord = game.hiddenWord;
@@ -939,6 +939,7 @@
                     const progressData = JSON.parse(progressCookie);
                     currentGuesses = progressData.guesses || [];
                     currentBestRank = progressData.bestRank !== undefined ? progressData.bestRank : Infinity;
+                    totalHintsElement.textContent = progressData.hints || 0;
                     if (progressData.solved) {
                         game.status = "solved";
                         const winnerGuess = currentGuesses.find(g => g.winner);
@@ -955,10 +956,12 @@
 
         function saveGameProgress() {
             if (!currentGame) return;
+            const currentHintCount = parseInt(totalHintsElement.textContent) || 0;
             const progressData = {
                 guesses: currentGuesses,
                 bestRank: currentBestRank,
-                solved: currentGuesses.some(g => g.winner)
+                solved: currentGuesses.some(g => g.winner),
+                hints: currentHintCount
             };
             setCookie(`${gameSavePrefix}${currentGame.id}`, JSON.stringify(progressData), 365);
 
