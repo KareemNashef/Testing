@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لعبة تخمين الكلمة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cairo', Arial, sans-serif;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.game-card {
+    background: #1e293b;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+    animation: slideIn 0.5s ease-out;
+    margin-bottom: 30px;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.header {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    padding: 40px 30px;
+    text-align: center;
+    color: white;
+}
+
+.header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.header p {
+    font-size: 16px;
+    opacity: 0.95;
+}
+
+.game-content {
+    padding: 30px;
+}
+
+.input-section {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.input-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+#guessInput {
+    width: 100%;
+    padding: 18px 24px;
+    font-size: 18px;
+    font-family: 'Cairo', Arial, sans-serif;
+    border: 2px solid #334155;
+    border-radius: 16px;
+    outline: none;
+    transition: all 0.3s;
+    background: #0f172a;
+    color: #e2e8f0;
+}
+
+#guessInput:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
+}
+
+#guessInput::placeholder {
+    color: #64748b;
+}
+
+.submit-btn {
+    padding: 18px 36px;
+    font-size: 18px;
+    font-family: 'Cairo', Arial, sans-serif;
+    font-weight: 600;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+    padding: 24px;
+    background: #0f172a;
+    border-radius: 16px;
+    border: 1px solid #334155;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #f59e0b;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-top: 5px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 20px;
+    padding-right: 10px;
+}
+
+.guesses-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.invalid-guesses {
+    margin-top: 40px;
+}
+
+.invalid-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-bottom: 15px;
+    padding-right: 10px;
+}
+
+.guess-item {
+    background: #0f172a;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s;
+    animation: guessAppear 0.5s ease-out;
+    border-right: 5px solid;
+    position: relative;
+    overflow: hidden;
+}
+
+.guess-item.latest::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.05), transparent);
+    transform: translateX(-100%);
+    animation: slideGlow 2s ease-in-out infinite;
+}
+
+@keyframes slideGlow {
+    0%, 100% {
+        transform: translateX(-100%);
+    }
+    50% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes guessAppear {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.guess-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.guess-item.invalid {
+    opacity: 0.7;
+    border-right-color: #64748b;
+}
+
+.guess-item.invalid.latest::before {
+    display: none;
+}
+
+.guess-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.guess-word {
+    font-size: 26px;
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.guess-item.invalid .guess-word {
+    color: #94a3b8;
+}
+
+.guess-rank {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    color: #cbd5e1;
+    background: #1e293b;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #334155;
+}
+
+.progress-bar {
+    height: 14px;
+    background: #1e293b;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #334155;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s cubic-bezier(0.65, 0, 0.35, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.3),
+        transparent
+    );
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.winner-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    animation: confetti-fall 3s linear forwards;
+}
+
+@keyframes confetti-fall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.winner-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1e293b;
+    padding: 50px;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    text-align: center;
+    z-index: 1001;
+    animation: modalPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    border: 2px solid #f59e0b;
+}
+
+@keyframes modalPop {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.winner-modal h2 {
+    font-size: 40px;
+    color: #10b981;
+    margin-bottom: 20px;
+}
+
+.winner-modal p {
+    font-size: 18px;
+    color: #cbd5e1;
+}
+
+.winner-modal .winner-word {
+    font-size: 32px;
+    font-weight: 700;
+    color: #f59e0b;
+    margin: 20px 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #64748b;
+}
+
+.empty-state i {
+    font-size: 72px;
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+.empty-state p {
+    font-size: 18px;
+}
+
+.not-in-list-badge {
+    display: inline-block;
+    background: #dc2626;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+    20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+@media (max-width: 600px) {
+    .input-section {
+        flex-direction: column;
+    }
+    
+    .submit-btn {
+        width: 100%;
+    }
+    
+    .header h1 {
+        font-size: 28px;
+    }
+    
+    .guess-word {
+        font-size: 22px;
+    }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="game-card">
+        <div class="header">
+            <h1>🎯 لعبة تخمين الكلمة</h1>
+            <p>خمن الكلمة السرية واقترب من الإجابة!</p>
+        </div>
+        
+        <div class="game-content">
+            <div class="input-section">
+                <div class="input-wrapper">
+                    <input 
+                        id="guessInput" 
+                        type="text" 
+                        placeholder="اكتب تخمينك هنا..."
+                        autocomplete="off"
+                    >
+                </div>
+                <button class="submit-btn" onclick="submitGuess()">
+                    تخمين
+                </button>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalGuesses">0</div>
+                    <div class="stat-label">المحاولات</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="bestRank">-</div>
+                    <div class="stat-label">أفضل ترتيب</div>
+                </div>
+            </div>
+            
+            <div id="validGuessesSection" style="display: none;">
+                <div class="section-title">التخمينات</div>
+                <div class="guesses-container" id="validGuesses"></div>
+            </div>
+            
+            <div id="invalidGuessesSection" class="invalid-guesses" style="display: none;">
+                <div class="invalid-section-title">كلمات غير موجودة في القائمة</div>
+                <div class="guesses-container" id="invalidGuesses"></div>
+            </div>
+            
+            <div class="empty-state" id="emptyState">
+                <i class="material-icons">lightbulb_outline</i>
+                <p>ابدأ بتخمين كلمة!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="winner-animation" id="winnerAnimation"></div>
+
+<script>
+// Load word list from external file or embed it here
+// For GitHub Pages, you can fetch from a words.json file
+let wordList = [];
+const hiddenWord = "مريض";
+
+// Fetch word list (you'll need to create words.json with your word list)
+fetch('words.json')
+    .then(response => response.json())
+    .then(data => {
+        wordList = data.words;
+    })
+    .catch(error => {
+        console.error('Error loading word list:', error);
+        // Fallback: embed your word list here directly
+        wordList = ["كلمة1", "كلمة2", "مريض", "كلمة3"]; // Replace with your actual words
+    });
+
+let guesses = [];
+let bestRank = Infinity;
+
+document.getElementById('guessInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        submitGuess();
+    }
+});
+
+function getColor(word) {
+    if (!wordList.includes(word)) {
+        return "#757575";
+    }
+    
+    const idx = wordList.indexOf(word);
+    const maxIdx = wordList.length - 1;
+    const ratio = 1 - idx / maxIdx;
+    
+    if (ratio > 0.8) return "#10b981";
+    if (ratio > 0.6) return "#84cc16";
+    if (ratio > 0.4) return "#f59e0b";
+    if (ratio > 0.2) return "#f97316";
+    return "#ef4444";
+}
+
+function submitGuess() {
+    const input = document.getElementById('guessInput');
+    const word = input.value.trim();
+    
+    if (!word) return;
+    
+    if (guesses.some(g => g.word === word)) {
+        shakeInput();
+        return;
+    }
+    
+    let data;
+    
+    if (word === hiddenWord) {
+        data = {
+            word: word,
+            color: "#10b981",
+            closeness: 0,
+            closeness_percent: 0,
+            winner: true,
+            rank: 1,
+            in_list: true
+        };
+        showWinner(data);
+    } else if (wordList.includes(word)) {
+        const idx = wordList.indexOf(word);
+        data = {
+            word: word,
+            color: getColor(word),
+            closeness: idx,
+            closeness_percent: Math.round((idx / (wordList.length - 1)) * 100),
+            winner: false,
+            rank: idx + 1,
+            in_list: true
+        };
+    } else {
+        data = {
+            word: word,
+            color: "#757575",
+            closeness: wordList.length,
+            closeness_percent: 100,
+            winner: false,
+            rank: wordList.length + 1,
+            in_list: false
+        };
+    }
+    
+    guesses.push(data);
+    
+    if (data.in_list && data.rank < bestRank) {
+        bestRank = data.rank;
+        document.getElementById('bestRank').textContent = bestRank;
+        const bestRankEl = document.getElementById('bestRank');
+        bestRankEl.style.animation = 'none';
+        setTimeout(() => {
+            bestRankEl.style.animation = 'pulse 0.5s';
+        }, 10);
+    }
+    
+    guesses.sort((a, b) => a.closeness - b.closeness);
+    
+    renderGuesses();
+    updateStats();
+    
+    input.value = "";
+    input.focus();
+}
+
+function renderGuesses() {
+    const validContainer = document.getElementById('validGuesses');
+    const invalidContainer = document.getElementById('invalidGuesses');
+    const validSection = document.getElementById('validGuessesSection');
+    const invalidSection = document.getElementById('invalidGuessesSection');
+    const emptyState = document.getElementById('emptyState');
+    
+    validContainer.innerHTML = '';
+    invalidContainer.innerHTML = '';
+    
+    const validGuesses = guesses.filter(g => g.in_list);
+    const invalidGuesses = guesses.filter(g => !g.in_list);
+    const latestGuess = guesses.length > 0 ? guesses[guesses.length - 1].word : null;
+    
+    emptyState.style.display = guesses.length === 0 ? 'block' : 'none';
+    validSection.style.display = validGuesses.length > 0 ? 'block' : 'none';
+    invalidSection.style.display = invalidGuesses.length > 0 ? 'block' : 'none';
+    
+    validGuesses.forEach((guess, index) => {
+        const isLatest = guess.word === latestGuess;
+        const item = createGuessItem(guess, index, false, isLatest);
+        validContainer.appendChild(item);
+    });
+    
+    invalidGuesses.forEach((guess, index) => {
+        const isLatest = guess.word === latestGuess;
+        const item = createGuessItem(guess, index, true, isLatest);
+        invalidContainer.appendChild(item);
+    });
+}
+
+function createGuessItem(guess, index, isInvalid, isLatest) {
+    const item = document.createElement('div');
+    item.className = 'guess-item' + (isInvalid ? ' invalid' : '') + (isLatest ? ' latest' : '');
+    item.style.borderRightColor = isInvalid ? '#64748b' : guess.color;
+    item.style.animationDelay = `${index * 0.05}s`;
+    
+    const header = document.createElement('div');
+    header.className = 'guess-header';
+    
+    const word = document.createElement('div');
+    word.className = 'guess-word';
+    word.textContent = guess.word;
+    
+    const rank = document.createElement('div');
+    rank.className = 'guess-rank';
+    
+    if (isInvalid) {
+        rank.innerHTML = `<span class="not-in-list-badge">ليست في القائمة</span>`;
+    } else {
+        rank.innerHTML = `<i class="material-icons" style="font-size: 16px;">looks_one</i> #${guess.rank}`;
+    }
+    
+    header.appendChild(word);
+    header.appendChild(rank);
+    
+    const progressBar = document.createElement('div');
+    progressBar.className = 'progress-bar';
+    
+    const progressFill = document.createElement('div');
+    progressFill.className = 'progress-fill';
+    progressFill.style.background = isInvalid ? '#64748b' : guess.color;
+    
+    if (isLatest && !isInvalid) {
+        progressFill.style.width = '0%';
+        setTimeout(() => {
+            progressFill.style.width = `${100 - guess.closeness_percent}%`;
+        }, 100);
+    } else {
+        progressFill.style.width = isInvalid ? '0%' : `${100 - guess.closeness_percent}%`;
+        progressFill.style.transition = 'none';
+    }
+    
+    progressBar.appendChild(progressFill);
+    
+    item.appendChild(header);
+    item.appendChild(progressBar);
+    
+    return item;
+}
+
+function updateStats() {
+    document.getElementById('totalGuesses').textContent = guesses.length;
+}
+
+function shakeInput() {
+    const input = document.getElementById('guessInput');
+    input.style.animation = 'shake 0.5s';
+    setTimeout(() => {
+        input.style.animation = '';
+    }, 500);
+}
+
+function showWinner(data) {
+    const animation = document.getElementById('winnerAnimation');
+    const colors = ['#f59e0b', '#d97706', '#10b981', '#059669', '#ef4444', '#dc2626', '#8b5cf6', '#7c3aed', '#06b6d4', '#0891b2'];
+    
+    for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            animation.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 3000);
+        }, i * 30);
+    }
+    
+    setTimeout(() => {
+        const modal = document.createElement('div');
+        modal.className = 'winner-modal';
+        modal.innerHTML = `
+            <h2>🎉 مبروك! 🎉</h2>
+            <div class="winner-word">${data.word}</div>
+            <p>لقد فزت في ${guesses.length + 1} محاولة!</p>
+        `;
+        document.body.appendChild(modal);
+    }, 500);
+}
+
+window.addEventListener('load', () => {
+    document.getElementById('guessInput').focus();
+});
+</script>
+</body>
+</html>
